@@ -31,25 +31,25 @@
 ###### Autó limit vásárlás
 ###### Jegyzetek - hozzáadás, módosítás, törlés
 ###### Gumiraktár - új gumi rögzítés
-###### Esemény rögzítés/módosítés/törlés - Tankolás 
-###### Esemény rögzítés/módosítés/törlés - Baleset 
-###### Esemény rögzítés/módosítés/törlés - Karosszéria javítás 
-###### Esemény rögzítés/módosítés/törlés - Autómentés és szállítás
-###### Esemény rögzítés/módosítés/törlés - Tisztítás
-###### Esemény rögzítés/módosítés/törlés - Autópálya matrica
-###### Esemény rögzítés/módosítés/törlés - Havi szemle
-###### Esemény rögzítés/módosítés/törlés - Kilométer állás
-###### Esemény rögzítés/módosítés/törlés - Egyéb szervíz 
-###### Esemény rögzítés/módosítés/törlés - Műszaki vizsga
-###### Esemény rögzítés/módosítés/törlés - Időszakos szervíz
-###### Esemény rögzítés/módosítés/törlés - Kötelező biztosítás
-###### Esemény rögzítés/módosítés/törlés - CASCO biztosítás
-###### Esemény rögzítés/módosítés/törlés - GAP biztosítás
-###### Esemény rögzítés/módosítés/törlés - Söfőrszolgálat
-###### Esemény rögzítés/módosítés/törlés - Gépjárműadó
-###### Esemény rögzítés/módosítés/törlés - Gumicsere
-###### Esemény rögzítés/módosítés/törlés - Bírság
-###### Esemény rögzítés/módosítés/törlés - Egyéb
+###### Esemény rögzítés/módosítás/törlés - Tankolás 
+###### Esemény rögzítés/módosítás/törlés - Baleset 
+###### Esemény rögzítés/módosítás/törlés - Karosszéria javítás 
+###### Esemény rögzítés/módosítás/törlés - Autómentés és szállítás
+###### Esemény rögzítés/módosítás/törlés - Tisztítás
+###### Esemény rögzítés/módosítás/törlés - Autópálya matrica
+###### Esemény rögzítés/módosítás/törlés - Havi szemle
+###### Esemény rögzítés/módosítás/törlés - Kilométer állás
+###### Esemény rögzítés/módosítás/törlés - Egyéb szervíz 
+###### Esemény rögzítés/módosítás/törlés - Műszaki vizsga
+###### Esemény rögzítés/módosítás/törlés - Időszakos szervíz
+###### Esemény rögzítés/módosítás/törlés - Kötelező biztosítás
+###### Esemény rögzítés/módosítás/törlés - CASCO biztosítás
+###### Esemény rögzítés/módosítás/törlés - GAP biztosítás
+###### Esemény rögzítés/módosítás/törlés - Söfőrszolgálat
+###### Esemény rögzítés/módosítás/törlés - Gépjárműadó
+###### Esemény rögzítés/módosítás/törlés - Gumicsere
+###### Esemény rögzítés/módosítás/törlés - Bírság
+###### Esemény rögzítés/módosítás/törlés - Egyéb
 ###### Autó bérlésre kínálása
 ###### Autó meghirdetése eladásra
 ###### Részletes adatok feltöltése
