@@ -396,7 +396,7 @@ public class TestBase {
 
 	public static void login(String username, String password) throws IOException, InterruptedException {
 		
-		clickLinkWithText("Belépés");
+		clickLinkWithText("Bejelentkezés");
 		Log.log("Click login");
 		sleep(3000);
 
@@ -410,11 +410,14 @@ public class TestBase {
 
 		fillName("username", username);
 		fillName("password", password);
+		
+		WebElement element = driver.findElement(By.xpath("//input[@class='webcar-blue-button']"));
+		JavascriptExecutor executor = (JavascriptExecutor)driver;
+		executor.executeScript("arguments[0].click();", element);
 
-		click(".btn-secondary");
 		Log.log("Click on Login");
 
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("user-img")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("webcar-base-header-profile-bubble-image")));
 		// assertTrue("Login succeed",
 		// driver.getPageSource().contains("Bejelentkezve"));
 		Log.log("Login succeed");
@@ -746,7 +749,7 @@ public class TestBase {
 		Log.log(strLimit);
 		Log.log(substr);
 
-		if (substr.equals(randLimit)) {
+		if (substr.equals(0)) {
 			Log.log("Képernyőn: " + randLimit);
 		} else {
 			Log.log("nem található a limit");
