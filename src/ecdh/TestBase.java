@@ -83,11 +83,19 @@ public class TestBase {
 	public static String yearfrom;
 	public static String publicPart;
 	public static String fullClearUser;
+	
+	public static String[] Tanu1 = { "Tanú 1", "234567CD", "Repülőtéri út 6/a" };
+	public static String[] Tanu2 = { "Tanú 2", "345678EF", "Igazából ez bármi lehet" };
+	
+	public static final int GYARTO = 1;
+	public static final int MODELL = 2;
+	// public static final int EVJARAT = 2;
+	// public static final int HONAP = 3;
+	
+	public static String haKell;
 
 	// byITOtest
 	public static Properties prop = new Properties();
-
-	// end
 
 	public static void main(String arg, int close) throws Throwable {
 
@@ -158,39 +166,430 @@ public class TestBase {
 		System.out.println(string);
 	}	
 
-	protected static void deleteUser() throws Exception, IOException, InterruptedException, TimeoutException {
-		sleep(5000);
-		passShepherd();
+	private static void click(String css) {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(css)));
+		driver.findElement(By.cssSelector(css)).click();
+	}
+	
+	private static void clickCss(String string) throws IOException, InterruptedException {
 
-		click(".user-img");
-		clickLinkWithText("Adatmódosítás");
-		clickLinkWithText("Fiók törlése");
-
-		try {
-
-			click(".btn-red");
-
-		} catch (TimeoutException e) {
-
-			driver.findElement(By.xpath("//div[@id='popup-content']//a[contains(text(), 'Garázs')]")).click();
-			sleep(3000);
-			deleteUserCars();
-			sleep(2000);
-			click(".user-img");
-			clickLinkWithText("Adatmódosítás");
-			clickLinkWithText("Fiók törlése");
-			click(".btn-red");
-
-		}
-
-		Log.log("Felhasználó törlése.");
-		wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.xpath("//p[contains(text(), 'Sikeres törlés email küldés!')]")));
-		Log.log("Törlés email elküldve");
-		deleteUserInEmail();
+		sleep(2000);
+		WebElement element = driver.findElement(By.cssSelector(string));
+		Actions actions = new Actions(driver);
+		actions.moveToElement(element).click().perform();
+		sleep(3000);
 
 	}
 
+	private static void clickLinkWithText(String string) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+				"//a[not(contains(@class,'d-sm-none'))]/descendant-or-self::*[contains(text(),'" + string + "')]")));
+		driver.findElement(By.xpath(
+				"//a[not(contains(@class,'d-sm-none'))]/descendant-or-self::*[contains(text(),'" + string + "')]"))
+				.click();
+
+		sleep(3000);
+	}
+	
+	private static void clickText(String string) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),'" + string + "')]")));
+		driver.findElement(By.xpath("//*[contains(text(),'" + string + "')]")).click();
+
+		sleep(3000);
+	}
+
+	private static void clickButton(String string) throws InterruptedException {
+		wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.xpath("//button[contains(text(), '" + string + "')]")));
+		driver.findElement(By.xpath("//button[contains(text(), '" + string + "')]")).click();
+
+		sleep(3000);
+	}
+
+	private static void clickXpath(String string) {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(string)));
+		driver.findElement(By.xpath(string)).click();
+	}
+	
+	public static void clickCheckboxById(String id) throws IOException, InterruptedException {
+		
+		String xpath = "//input[@type='checkbox' and @id='" + id + "']";
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+		driver.findElement(By.xpath(xpath)).click();
+		sleep(3000);
+		
+	}
+
+	public static void cronRun() throws IOException, InterruptedException {
+		goToPage(url + "/hu/admin/car/pages/run-cron/event");
+		clickLinkWithText("Események cron futtatása");
+	}
+
+	private static void acceptCookies() throws IOException, InterruptedException {
+		Log.log("Accept cookies");
+		try {
+			driver.findElement(By.className("cc-btn")).click();
+			sleep(2000);
+		} catch (NoSuchElementException e) {
+			Log.log("ERROR - No cookie acception message.");
+		}
+	}
+
+	public static void goToPage(String url) throws IOException {
+		driver.get(url);
+	}
+
+	public static void close() throws IOException {
+
+		Log.log("Finished.");
+		System.out.println("Inside" + Log.testname);
+		Log.close();
+		if (TestBase.close == 1) {
+			driver.close();
+		}
+	}
+
+	public static void select(String string, String string2) throws IOException {
+		
+		WebDriverWait wait = new WebDriverWait(driver, 15);
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + string + "']")));
+
+		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + string + "']"));
+		Select dropdown = new Select(mySelectElement);
+		dropdown.selectByVisibleText(string2);
+		Log.log(string2 + " selected from " + string);
+	}
+	
+	public static void selectValue(String inputName, String value) throws IOException, InterruptedException {
+		
+		Select selectInput = new Select(driver.findElement(By.name(inputName)));
+		sleep(3000);
+		selectInput.selectByValue(value);
+		
+	}
+
+	public static void selectIndex(String string, int i) throws IOException {
+		WebDriverWait wait = new WebDriverWait(driver, 15);
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + string + "']")));
+
+		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + string + "']"));
+		Select dropdown = new Select(mySelectElement);
+		dropdown.selectByIndex(i);
+		Log.log("Index " + i + " selected from " + string);
+
+	}
+	
+	public static void multiSelectByXpath(String xpath) throws IOException, InterruptedException {
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+		driver.findElement(By.xpath(xpath)).click();
+		sleep(3000);
+		List<WebElement> options = driver.findElements(By.xpath("//ul[@class='multiselect-container dropdown-menu show']/li"));
+		Random rand = new Random();
+		int list = rand.nextInt(options.size());
+		//Log.log(""+options.size());
+		//Log.log(""+list);
+		
+		options.get(list).click();
+
+		sleep(2000);
+		
+	}
+	
+	public static void checkSelect(String name, String text) throws IOException {
+		String defaultItem = new Select(driver.findElement(By.cssSelector("select[name='" + name + "']")))
+				.getFirstSelectedOption().getText();
+
+		if (defaultItem == text) {
+			Log.log(text + " selected - its ok");
+		} else {
+			Log.log('|' + defaultItem + "| selected - but expected: |" + text + "|");
+		}
+		assertEquals(defaultItem, text);
+
+	}
+
+	public static boolean exists(String selector) throws IOException {
+		if (driver.findElements(By.cssSelector(selector)).size() != 0) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	private static void checkField(String name, String expectedValue) throws IOException {
+		String data = "";
+		if (driver.findElements(By.cssSelector("input[name=\"" + name + "\"]")).size() != 0) {
+			data = driver.findElement(By.cssSelector("input[name=\"" + name + "\"]")).getAttribute("value");
+		}
+		if (driver.findElements(By.cssSelector("select[name=\"" + name + "\"]")).size() != 0) {
+			Select select = new Select(driver.findElement(By.cssSelector("select[name=\"" + name + "\"]")));
+			data = select.getFirstSelectedOption().getText();
+		}
+		if (driver.findElements(By.cssSelector("textarea[name=\"" + name + "\"]")).size() != 0) {
+			WebElement textarea = driver.findElement(By.cssSelector("textarea[name=\"" + name + "\"]"));
+			data = textarea.getText();
+		}
+		try {
+			assertEquals(data, expectedValue);
+		} catch (Exception e) {
+			System.out.println("Mező: " + name + " - nem az elvárt érték");
+			Log.log("Mező: " + name + " - nem az elvárt érték");
+			throw e;
+		}
+
+		Log.log("Mező: " + name + " - OK " + expectedValue);
+
+	}
+
+	private static void onScreen(String string) throws IOException {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(), '" + string + "')]")));
+		System.out.println(string);
+		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
+		Log.log("Képernyőn: " + string);
+	}
+
+	private static void onScreenWS(String string) throws IOException {
+		wait.until(
+				ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()[contains(.,'" + string + "')]]")));
+		System.out.println(string);
+		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
+		Log.log("Képernyőn: " + string);
+	}
+
+	private static void onScreenValue(String string) throws IOException {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@value='" + string + "']")));
+		System.out.println(string);
+		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
+		Log.log("Képernyőn: " + string);
+	}
+
+	private static void onScreenSelected(String string) throws IOException {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(
+				By.xpath("//option[@selected='selected' and contains(text(), '" + string + "')]")));
+		System.out.println(string);
+		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
+		Log.log("Képernyőn: " + string);
+	}
+
+	private static void onScreenAlert(String string) throws IOException {
+		wait.until(
+				ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(), '" + string + "')]")));
+		System.out.println(string);
+		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
+		Log.log("Képernyőn: " + string);
+	}
+
+	public static void test() {
+		driver.get("https://testcenter.vr/selenium-test-surface.php");
+
+	}
+
+	private static void submit() {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='submit']"))).click();
+	}
+	
+	public static void checkPrice(int num, String delimiter) throws IOException {
+		String pattern = "###,###";
+		DecimalFormat format = new DecimalFormat(pattern);
+		String stringPrice = format.format(num);
+		String commaStringPrice = stringPrice.replaceAll("[^0-9]", delimiter);
+		String[] parts = commaStringPrice.split(delimiter);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(
+				By.xpath("//*[contains(text(), '" + parts[0] + "') and contains(text(), '" + parts[1] + "')]")));
+		Log.log("Képernyőn: " + parts[0] + " " + parts[1]);
+	}
+
+	private static void sleep(int i) throws InterruptedException {
+		System.out.println("\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "wait "
+				+ i + " millisconds");
+		Thread.sleep(i);
+
+	}
+
+	public static String getCarId() {
+		String url = driver.getCurrentUrl();
+		return url.replaceFirst(".*/([^/?]+).*", "$1");
+	}
+
+	public static String dateLocale(LocalDate date) {
+		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
+		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
+		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
+
+		String year = date.format(yearF);
+		String month = date.format(monthF);
+		String day = date.format(dayF);
+
+		month = month.replace("January", "január");
+		month = month.replace("February", "február");
+		month = month.replace("March", "március");
+		month = month.replace("April", "április");
+		month = month.replace("May", "május");
+		month = month.replace("June", "június");
+		month = month.replace("July", "július");
+		month = month.replace("August", "augusztus");
+		month = month.replace("September", "szeptember");
+		month = month.replace("October", "október");
+		month = month.replace("November", "november");
+		month = month.replace("December", "december");
+
+		return year + " " + month + " " + day;
+	}
+	
+	public static String dateTimeLocaleMinusOneHour(LocalDateTime date) {
+		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
+		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
+		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
+		DateTimeFormatter timeF = DateTimeFormatter.ofPattern("HH:mm");
+		LocalDateTime dateMinusOneHour = date.minus(1, ChronoUnit.HOURS);
+		
+		String year = dateMinusOneHour.format(yearF);
+		String month = dateMinusOneHour.format(monthF);
+		String day = dateMinusOneHour.format(dayF);
+		String time = dateMinusOneHour.format(timeF);
+
+		month = month.replace("January", "január");
+		month = month.replace("February", "február");
+		month = month.replace("March", "március");
+		month = month.replace("April", "április");
+		month = month.replace("May", "május");
+		month = month.replace("June", "június");
+		month = month.replace("July", "július");
+		month = month.replace("August", "augusztus");
+		month = month.replace("September", "szeptember");
+		month = month.replace("October", "október");
+		month = month.replace("November", "november");
+		month = month.replace("December", "december");
+
+		return year + " " + month + " " + day + " " + time;
+	}
+	
+	public static String dateTimeLocale(LocalDateTime date) {
+		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
+		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
+		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
+		DateTimeFormatter timeF = DateTimeFormatter.ofPattern("HH:mm");
+
+		
+		String year = date.format(yearF);
+		String month = date.format(monthF);
+		String day = date.format(dayF);
+		String time = date.format(timeF);
+
+		month = month.replace("January", "január");
+		month = month.replace("February", "február");
+		month = month.replace("March", "március");
+		month = month.replace("April", "április");
+		month = month.replace("May", "május");
+		month = month.replace("June", "június");
+		month = month.replace("July", "július");
+		month = month.replace("August", "augusztus");
+		month = month.replace("September", "szeptember");
+		month = month.replace("October", "október");
+		month = month.replace("November", "november");
+		month = month.replace("December", "december");
+
+		return year + " " + month + " " + day + " " + time;
+	}
+
+	public static String dateDots(LocalDate date) {
+		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
+		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MM.");
+		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("dd.");
+
+		String year = date.format(yearF);
+		String month = date.format(monthF);
+		String day = date.format(dayF);
+
+		return year + " " + month + " " + day;
+	}
+
+	public static String dateDashes(LocalDate date) {
+		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy-");
+		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MM-");
+		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("dd");
+
+		String year = date.format(yearF);
+		String month = date.format(monthF);
+		String day = date.format(dayF);
+
+		return year + month + day;
+	}
+	
+	public static String getRandomText(int i) {
+		Random rand = new Random();
+		Integer randomNum = rand.nextInt(10);
+
+		LoremIpsum ipsum = new LoremIpsum();
+		return ipsum.getWords(i, randomNum);
+	}
+
+	public static String generatePlateNumber() {
+		String letters = "";
+		int n = 'Z' - 'A' + 1;
+		for (int i = 0; i < 3; i++) {
+			char c = (char) ('A' + Math.random() * n);
+			letters += c;
+		}
+
+		String digits = "";
+		int x = '9' - '0' + 1;
+		for (int i = 0; i < 3; i++) {
+			char c = (char) ('0' + Math.random() * x);
+			digits += c;
+		}
+
+		String licensePlate = letters + "-" + digits;
+		return licensePlate;
+	}
+
+	public static String generatePlateNumberForeignCountry() {
+		String letters = "";
+		int n = 'Z' - 'A' + 1;
+		for (int i = 0; i < 3; i++) {
+			char c = (char) ('A' + Math.random() * n);
+			letters += c;
+		}
+
+		String digits = "";
+		int x = '9' - '0' + 1;
+		for (int i = 0; i < 3; i++) {
+			char c = (char) ('0' + Math.random() * x);
+			digits += c;
+		}
+
+		String licensePlate = letters + digits;
+		return licensePlate;
+	}
+
+	public static String randomSelect(String name) throws IOException {
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + name + "']")));
+		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + name + "']"));
+		Select dropdown = new Select(mySelectElement);
+		List<WebElement> options = dropdown.getOptions();
+		int size = options.size();
+		int randnMumber = new Random().nextInt(size - 1) + 1;
+		options.get(randnMumber).click();
+		Log.log(options.get(randnMumber).getText() + " selected from " + name);
+
+		return options.get(randnMumber).getText();
+	}
+
+	public static String GetCompanyName() throws IOException {
+		goToPage(url + "/hu/car-companies/edit");
+		return driver.findElement(By.id("name")).getAttribute("value");
+	}
+
+	public static void passShepherd() {
+		try {
+			driver.findElement(By.className("shepherd-button")).click();
+		} catch (NoSuchElementException e) {
+
+		}
+	}
+	
 	protected static void deleteUserInEmail() throws Exception {
 
 		sleep(2000);
@@ -268,24 +667,10 @@ public class TestBase {
 
 	}
 
-	private static void acceptCookies() throws IOException, InterruptedException {
-		Log.log("Accept cookies");
-		try {
-			driver.findElement(By.className("cc-btn")).click();
-			sleep(2000);
-		} catch (NoSuchElementException e) {
-			Log.log("ERROR - No cookie acception message.");
-		}
-	}
-
 	private static void unlockPage() throws IOException {
 		// driver.findElement(By.name("pass")).sendKeys("kecskesajt");
 		// driver.findElement(By.className("btn-success")).click();
 		// Log.log("Password protection unlocked.");
-	}
-
-	public static void goToPage(String url) throws IOException {
-		driver.get(url);
 	}
 
 	public static void fillName(String name, String text) throws IOException, InterruptedException {
@@ -384,16 +769,6 @@ public class TestBase {
 
 	}
 
-	public static void close() throws IOException {
-
-		Log.log("Finished.");
-		System.out.println("Inside" + Log.testname);
-		Log.close();
-		if (TestBase.close == 1) {
-			driver.close();
-		}
-	}
-
 	public static void login(String username, String password) throws IOException, InterruptedException {
 		
 		clickLinkWithText("Bejelentkezés");
@@ -422,63 +797,6 @@ public class TestBase {
 		// driver.getPageSource().contains("Bejelentkezve"));
 		Log.log("Login succeed");
 
-	}
-
-	public static void select(String string, String string2) throws IOException {
-		
-		WebDriverWait wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + string + "']")));
-
-		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + string + "']"));
-		Select dropdown = new Select(mySelectElement);
-		dropdown.selectByVisibleText(string2);
-		Log.log(string2 + " selected from " + string);
-	}
-	
-	public static void selectValue(String inputName, String value) throws IOException, InterruptedException {
-		
-		Select selectInput = new Select(driver.findElement(By.name(inputName)));
-		sleep(3000);
-		selectInput.selectByValue(value);
-		
-	}
-
-	public static void selectIndex(String string, int i) throws IOException {
-		WebDriverWait wait = new WebDriverWait(driver, 15);
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + string + "']")));
-
-		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + string + "']"));
-		Select dropdown = new Select(mySelectElement);
-		dropdown.selectByIndex(i);
-		Log.log("Index " + i + " selected from " + string);
-
-	}
-	
-	public static void multiSelectByXpath(String xpath) throws IOException, InterruptedException {
-		
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
-		driver.findElement(By.xpath(xpath)).click();
-		sleep(3000);
-		List<WebElement> options = driver.findElements(By.xpath("//ul[@class='multiselect-container dropdown-menu show']/li"));
-		Random rand = new Random();
-		int list = rand.nextInt(options.size());
-		//Log.log(""+options.size());
-		//Log.log(""+list);
-		
-		options.get(list).click();
-
-		sleep(2000);
-		
-	}
-	
-	public static void clickCheckboxById(String id) throws IOException, InterruptedException {
-		
-		String xpath = "//input[@type='checkbox' and @id='" + id + "']";
-		
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
-		driver.findElement(By.xpath(xpath)).click();
-		sleep(3000);
-		
 	}
 
 	public static void CarLimit() throws IOException, InterruptedException, AWTException {
@@ -962,7 +1280,6 @@ public class TestBase {
 			
 	}
 
-
 	public static void forgottenPassword() throws Exception {
 		
 		driver.findElement(By.partialLinkText("Elfelejtetted")).click();
@@ -1021,11 +1338,6 @@ public class TestBase {
 
 	}
 
-	public static final int GYARTO = 1;
-	public static final int MODELL = 2;
-	// public static final int EVJARAT = 2;
-	// public static final int HONAP = 3;
-
 	public static String fillCarField(String inputField, String listField) throws IOException, InterruptedException {
 
 		click(inputField);
@@ -1048,44 +1360,6 @@ public class TestBase {
 		sleep(1000);
 		return randListElement;
 
-	}
-
-	public static String generatePlateNumber() {
-		String letters = "";
-		int n = 'Z' - 'A' + 1;
-		for (int i = 0; i < 3; i++) {
-			char c = (char) ('A' + Math.random() * n);
-			letters += c;
-		}
-
-		String digits = "";
-		int x = '9' - '0' + 1;
-		for (int i = 0; i < 3; i++) {
-			char c = (char) ('0' + Math.random() * x);
-			digits += c;
-		}
-
-		String licensePlate = letters + "-" + digits;
-		return licensePlate;
-	}
-
-	public static String generatePlateNumberForeignCountry() {
-		String letters = "";
-		int n = 'Z' - 'A' + 1;
-		for (int i = 0; i < 3; i++) {
-			char c = (char) ('A' + Math.random() * n);
-			letters += c;
-		}
-
-		String digits = "";
-		int x = '9' - '0' + 1;
-		for (int i = 0; i < 3; i++) {
-			char c = (char) ('0' + Math.random() * x);
-			digits += c;
-		}
-
-		String licensePlate = letters + digits;
-		return licensePlate;
 	}
 
 	public static void addNewCar() throws IOException, InterruptedException, AWTException {
@@ -2613,8 +2887,6 @@ public class TestBase {
 
 	}
 
-	public static String haKell;
-
 	public static String checkRequest(String requestId) throws IOException, InterruptedException {
 		TestBase.goToPage(url + "/hu/gumi-erdeklodesek");
 
@@ -2695,32 +2967,6 @@ public class TestBase {
 
 		return randNum;
 
-	}
-
-	public static void checkSelect(String name, String text) throws IOException {
-		String defaultItem = new Select(driver.findElement(By.cssSelector("select[name='" + name + "']")))
-				.getFirstSelectedOption().getText();
-
-		if (defaultItem == text) {
-			Log.log(text + " selected - its ok");
-		} else {
-			Log.log('|' + defaultItem + "| selected - but expected: |" + text + "|");
-		}
-		assertEquals(defaultItem, text);
-
-	}
-
-	public static String randomSelect(String name) throws IOException {
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select[name='" + name + "']")));
-		WebElement mySelectElement = driver.findElement(By.cssSelector("select[name='" + name + "']"));
-		Select dropdown = new Select(mySelectElement);
-		List<WebElement> options = dropdown.getOptions();
-		int size = options.size();
-		int randnMumber = new Random().nextInt(size - 1) + 1;
-		options.get(randnMumber).click();
-		Log.log(options.get(randnMumber).getText() + " selected from " + name);
-
-		return options.get(randnMumber).getText();
 	}
 
 	public static void logout() throws IOException, InterruptedException {
@@ -2873,11 +3119,6 @@ public class TestBase {
 		// '2 194 562 Ft')]")));
 		assertTrue("Car found", driver.getPageSource().contains("BMW 116"));
 		Log.log("Autó szerepel a használtautó keresőben.");
-	}
-
-	private static void click(String css) {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(css)));
-		driver.findElement(By.cssSelector(css)).click();
 	}
 
 	public static void checkRequestOfferTire(String companyName, String price)
@@ -3035,19 +3276,6 @@ public class TestBase {
 
 	}
 
-	public static String GetCompanyName() throws IOException {
-		goToPage(url + "/hu/car-companies/edit");
-		return driver.findElement(By.id("name")).getAttribute("value");
-	}
-
-	public static boolean exists(String selector) throws IOException {
-		if (driver.findElements(By.cssSelector(selector)).size() != 0) {
-			return true;
-		}
-
-		return false;
-	}
-
 	public static String SendRequestPart() throws IOException, InterruptedException {
 
 		clickLinkWithText("Ajánlatkérés");
@@ -3089,36 +3317,6 @@ public class TestBase {
 		return driver.findElement(By.cssSelector(".order-1 a")).getText();
 	}
 
-	private static void clickLinkWithText(String string) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-				"//a[not(contains(@class,'d-sm-none'))]/descendant-or-self::*[contains(text(),'" + string + "')]")));
-		driver.findElement(By.xpath(
-				"//a[not(contains(@class,'d-sm-none'))]/descendant-or-self::*[contains(text(),'" + string + "')]"))
-				.click();
-
-		sleep(3000);
-	}
-	
-	private static void clickText(String string) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),'" + string + "')]")));
-		driver.findElement(By.xpath("//*[contains(text(),'" + string + "')]")).click();
-
-		sleep(3000);
-	}
-
-	private static void clickButton(String string) throws InterruptedException {
-		wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.xpath("//button[contains(text(), '" + string + "')]")));
-		driver.findElement(By.xpath("//button[contains(text(), '" + string + "')]")).click();
-
-		sleep(3000);
-	}
-
-	private static void clickXpath(String string) {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(string)));
-		driver.findElement(By.xpath(string)).click();
-	}
-
 	public static void FillUserPersonalData() throws IOException, InterruptedException {
 		click(".user-img");
 		clickLinkWithText("Adatmódosítás");
@@ -3144,74 +3342,6 @@ public class TestBase {
 		checkField("birthdate", "1970-12-12");
 		checkField("personal_ident", "AE12345678");
 		checkField("driving_licence_number", "fdsfdsAE12345678");
-
-	}
-
-	private static void checkField(String name, String expectedValue) throws IOException {
-		String data = "";
-		if (driver.findElements(By.cssSelector("input[name=\"" + name + "\"]")).size() != 0) {
-			data = driver.findElement(By.cssSelector("input[name=\"" + name + "\"]")).getAttribute("value");
-		}
-		if (driver.findElements(By.cssSelector("select[name=\"" + name + "\"]")).size() != 0) {
-			Select select = new Select(driver.findElement(By.cssSelector("select[name=\"" + name + "\"]")));
-			data = select.getFirstSelectedOption().getText();
-		}
-		if (driver.findElements(By.cssSelector("textarea[name=\"" + name + "\"]")).size() != 0) {
-			WebElement textarea = driver.findElement(By.cssSelector("textarea[name=\"" + name + "\"]"));
-			data = textarea.getText();
-		}
-		try {
-			assertEquals(data, expectedValue);
-		} catch (Exception e) {
-			System.out.println("Mező: " + name + " - nem az elvárt érték");
-			Log.log("Mező: " + name + " - nem az elvárt érték");
-			throw e;
-		}
-
-		Log.log("Mező: " + name + " - OK " + expectedValue);
-
-	}
-
-	private static void onScreen(String string) throws IOException {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(), '" + string + "')]")));
-		System.out.println(string);
-		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
-		Log.log("Képernyőn: " + string);
-	}
-
-	private static void onScreenWS(String string) throws IOException {
-		wait.until(
-				ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()[contains(.,'" + string + "')]]")));
-		System.out.println(string);
-		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
-		Log.log("Képernyőn: " + string);
-	}
-
-	private static void onScreenValue(String string) throws IOException {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@value='" + string + "']")));
-		System.out.println(string);
-		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
-		Log.log("Képernyőn: " + string);
-	}
-
-	private static void onScreenSelected(String string) throws IOException {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.xpath("//option[@selected='selected' and contains(text(), '" + string + "')]")));
-		System.out.println(string);
-		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
-		Log.log("Képernyőn: " + string);
-	}
-
-	private static void onScreenAlert(String string) throws IOException {
-		wait.until(
-				ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(text(), '" + string + "')]")));
-		System.out.println(string);
-		assertTrue("Szerepel a forrásban", driver.getPageSource().contains(string));
-		Log.log("Képernyőn: " + string);
-	}
-
-	public static void test() {
-		driver.get("https://testcenter.vr/selenium-test-surface.php");
 
 	}
 
@@ -3925,10 +4055,6 @@ public class TestBase {
 
 	}
 
-	private static void submit() {
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@type='submit']"))).click();
-	}
-
 	public static void addNewCarEventCompulsoryInsurance() throws IOException, InterruptedException {
 		// goToPage(url+"/hu/biztositas-hozzadasa/" + getCarId() + "/1");
 		clickLinkWithText("esemény hozzáadása");
@@ -4060,243 +4186,6 @@ public class TestBase {
 		assertTrue("Event deleted", !driver.getPageSource().contains("CASCO biztosítás"));
 		Log.log("Esemény: CASCO sikeresen törölve.");
 
-	}
-
-	public static void checkPrice(int num, String delimiter) throws IOException {
-		String pattern = "###,###";
-		DecimalFormat format = new DecimalFormat(pattern);
-		String stringPrice = format.format(num);
-		String commaStringPrice = stringPrice.replaceAll("[^0-9]", delimiter);
-		String[] parts = commaStringPrice.split(delimiter);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(
-				By.xpath("//*[contains(text(), '" + parts[0] + "') and contains(text(), '" + parts[1] + "')]")));
-		Log.log("Képernyőn: " + parts[0] + " " + parts[1]);
-	}
-
-	public static void addNewCarEventGapInsurance() throws IOException, InterruptedException {
-
-		// FELVITEL
-		clickLinkWithText("esemény hozzáadása");
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("sprite-mycar_insurance")));
-		clickLinkWithText("GAP");
-		sleep(2000);
-
-		String company = randomSelect("company");
-
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("start-date"))).click();
-		sleep(1000);
-		// driver.findElement(By.cssSelector("input[name=\"start_date\"]")).click();
-		// String period = randomSelect("period");
-
-		int randNumber = new Random().nextInt(123456);
-		String ident = "" + randNumber;
-		fillName("ident", ident);
-
-		int price = new Random().nextInt(123456);
-		String stringPrice = "" + price;
-		fillName("price", stringPrice);
-		submit();
-
-		// FELVITEL VÉGE
-
-		sleep(2000);
-		driver.findElement(By.xpath("//a[contains(text(), 'adatlapja')]")).click();
-		sleep(3000);
-
-		// MEGTEKINTÉS ADATLAPON
-
-		String pattern = "//dt[contains(text(),'GAP biztosítás')]//following-sibling::dd[1]";
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(pattern)));
-		WebElement insuranceParent = driver.findElement(By.xpath(pattern));
-		String insurance = insuranceParent.findElement(By.tagName("a")).getText();
-		LocalDate dueDate = LocalDate.now().plusYears(1);
-
-		onScreen("Új GAP biztosítás");
-
-		Log.log("Elvárt lejárati dátum: " + dateLocale(dueDate));
-		assertTrue("GAP biztosítás lejárat OK.", insurance.contains("Lejár: " + dateLocale(dueDate)));
-		Log.log("GAP biztosítás lejárat OK.");
-
-		// MEGTEKINTÉS ESEMÉNY
-
-		clickLinkWithText("biztosítás");
-		sleep(4000);
-		onScreen(company);
-		// onScreen(period);
-		onScreen(ident);
-
-		checkPrice(price, " ");
-
-		// MÓDOSÍTÁS + FELVITEL ELLENŐRZÉS
-
-		clickLinkWithText("Szerkesztés");
-		checkSelect("type", "GAP biztosítás");
-		checkSelect("company", company);
-
-		checkField("ident", ident);
-		checkField("price", "" + price);
-		// checkField("period", period);
-
-		randNumber = new Random().nextInt(123456);
-		ident = "" + randNumber;
-		fillName("ident", ident);
-
-		price = new Random().nextInt(123456);
-		stringPrice = "" + price;
-		fillName("price", stringPrice);
-
-		submit();
-
-		// MÓDOSÍTOTT ELLENŐRZÉSE
-
-		sleep(2000);
-
-		clickLinkWithText("biztosítás");
-		onScreen(company);
-		// onScreen(period);
-		onScreen(ident);
-
-		checkPrice(price, " ");
-
-		// MÓDOSÍTOTT FELVITEL ELLENŐRZÉSE
-
-		sleep(3000);
-		clickLinkWithText("Szerkesztés");
-		sleep(2000);
-		checkSelect("type", "GAP biztosítás");
-		checkSelect("company", company);
-
-		checkField("ident", ident);
-		checkField("price", "" + price);
-
-		submit();
-		sleep(2000);
-
-		// TÖRÖL
-
-		driver.findElement(By.cssSelector(".fas.fa-trash.circle")).click();
-		click("a[data-apply=\"confirmation\"]");
-
-		sleep(3000);
-		assertTrue("Event deleted", !driver.getPageSource().contains("GAP biztosítás"));
-		Log.log("Esemény: GAP biztosítás sikeresen törölve.");
-	}
-
-	private static void sleep(int i) throws InterruptedException {
-		System.out.println("\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "wait "
-				+ i + " millisconds");
-		Thread.sleep(i);
-
-	}
-
-	public static String getCarId() {
-		String url = driver.getCurrentUrl();
-		return url.replaceFirst(".*/([^/?]+).*", "$1");
-	}
-
-	public static String dateLocale(LocalDate date) {
-		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
-		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
-		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
-
-		String year = date.format(yearF);
-		String month = date.format(monthF);
-		String day = date.format(dayF);
-
-		month = month.replace("January", "január");
-		month = month.replace("February", "február");
-		month = month.replace("March", "március");
-		month = month.replace("April", "április");
-		month = month.replace("May", "május");
-		month = month.replace("June", "június");
-		month = month.replace("July", "július");
-		month = month.replace("August", "augusztus");
-		month = month.replace("September", "szeptember");
-		month = month.replace("October", "október");
-		month = month.replace("November", "november");
-		month = month.replace("December", "december");
-
-		return year + " " + month + " " + day;
-	}
-	
-	public static String dateTimeLocaleMinusOneHour(LocalDateTime date) {
-		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
-		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
-		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
-		DateTimeFormatter timeF = DateTimeFormatter.ofPattern("HH:mm");
-		LocalDateTime dateMinusOneHour = date.minus(1, ChronoUnit.HOURS);
-		
-		String year = dateMinusOneHour.format(yearF);
-		String month = dateMinusOneHour.format(monthF);
-		String day = dateMinusOneHour.format(dayF);
-		String time = dateMinusOneHour.format(timeF);
-
-		month = month.replace("January", "január");
-		month = month.replace("February", "február");
-		month = month.replace("March", "március");
-		month = month.replace("April", "április");
-		month = month.replace("May", "május");
-		month = month.replace("June", "június");
-		month = month.replace("July", "július");
-		month = month.replace("August", "augusztus");
-		month = month.replace("September", "szeptember");
-		month = month.replace("October", "október");
-		month = month.replace("November", "november");
-		month = month.replace("December", "december");
-
-		return year + " " + month + " " + day + " " + time;
-	}
-	
-	public static String dateTimeLocale(LocalDateTime date) {
-		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
-		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MMMM");
-		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("d.");
-		DateTimeFormatter timeF = DateTimeFormatter.ofPattern("HH:mm");
-
-		
-		String year = date.format(yearF);
-		String month = date.format(monthF);
-		String day = date.format(dayF);
-		String time = date.format(timeF);
-
-		month = month.replace("January", "január");
-		month = month.replace("February", "február");
-		month = month.replace("March", "március");
-		month = month.replace("April", "április");
-		month = month.replace("May", "május");
-		month = month.replace("June", "június");
-		month = month.replace("July", "július");
-		month = month.replace("August", "augusztus");
-		month = month.replace("September", "szeptember");
-		month = month.replace("October", "október");
-		month = month.replace("November", "november");
-		month = month.replace("December", "december");
-
-		return year + " " + month + " " + day + " " + time;
-	}
-
-	public static String dateDots(LocalDate date) {
-		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy.");
-		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MM.");
-		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("dd.");
-
-		String year = date.format(yearF);
-		String month = date.format(monthF);
-		String day = date.format(dayF);
-
-		return year + " " + month + " " + day;
-	}
-
-	public static String dateDashes(LocalDate date) {
-		DateTimeFormatter yearF = DateTimeFormatter.ofPattern("yyyy-");
-		DateTimeFormatter monthF = DateTimeFormatter.ofPattern("MM-");
-		DateTimeFormatter dayF = DateTimeFormatter.ofPattern("dd");
-
-		String year = date.format(yearF);
-		String month = date.format(monthF);
-		String day = date.format(dayF);
-
-		return year + month + day;
 	}
 
 	public static void setCarForRent() throws IOException, InterruptedException {
@@ -4757,12 +4646,113 @@ public class TestBase {
 
 	}
 
-	public static String getRandomText(int i) {
-		Random rand = new Random();
-		Integer randomNum = rand.nextInt(10);
+	public static void addNewCarEventGapInsurance() throws IOException, InterruptedException {
 
-		LoremIpsum ipsum = new LoremIpsum();
-		return ipsum.getWords(i, randomNum);
+		// FELVITEL
+		clickLinkWithText("esemény hozzáadása");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("sprite-mycar_insurance")));
+		clickLinkWithText("GAP");
+		sleep(2000);
+
+		String company = randomSelect("company");
+
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("start-date"))).click();
+		sleep(1000);
+		// driver.findElement(By.cssSelector("input[name=\"start_date\"]")).click();
+		// String period = randomSelect("period");
+
+		int randNumber = new Random().nextInt(123456);
+		String ident = "" + randNumber;
+		fillName("ident", ident);
+
+		int price = new Random().nextInt(123456);
+		String stringPrice = "" + price;
+		fillName("price", stringPrice);
+		submit();
+
+		// FELVITEL VÉGE
+
+		sleep(2000);
+		driver.findElement(By.xpath("//a[contains(text(), 'adatlapja')]")).click();
+		sleep(3000);
+
+		// MEGTEKINTÉS ADATLAPON
+
+		String pattern = "//dt[contains(text(),'GAP biztosítás')]//following-sibling::dd[1]";
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(pattern)));
+		WebElement insuranceParent = driver.findElement(By.xpath(pattern));
+		String insurance = insuranceParent.findElement(By.tagName("a")).getText();
+		LocalDate dueDate = LocalDate.now().plusYears(1);
+
+		onScreen("Új GAP biztosítás");
+
+		Log.log("Elvárt lejárati dátum: " + dateLocale(dueDate));
+		assertTrue("GAP biztosítás lejárat OK.", insurance.contains("Lejár: " + dateLocale(dueDate)));
+		Log.log("GAP biztosítás lejárat OK.");
+
+		// MEGTEKINTÉS ESEMÉNY
+
+		clickLinkWithText("biztosítás");
+		sleep(4000);
+		onScreen(company);
+		// onScreen(period);
+		onScreen(ident);
+
+		checkPrice(price, " ");
+
+		// MÓDOSÍTÁS + FELVITEL ELLENŐRZÉS
+
+		clickLinkWithText("Szerkesztés");
+		checkSelect("type", "GAP biztosítás");
+		checkSelect("company", company);
+
+		checkField("ident", ident);
+		checkField("price", "" + price);
+		// checkField("period", period);
+
+		randNumber = new Random().nextInt(123456);
+		ident = "" + randNumber;
+		fillName("ident", ident);
+
+		price = new Random().nextInt(123456);
+		stringPrice = "" + price;
+		fillName("price", stringPrice);
+
+		submit();
+
+		// MÓDOSÍTOTT ELLENŐRZÉSE
+
+		sleep(2000);
+
+		clickLinkWithText("biztosítás");
+		onScreen(company);
+		// onScreen(period);
+		onScreen(ident);
+
+		checkPrice(price, " ");
+
+		// MÓDOSÍTOTT FELVITEL ELLENŐRZÉSE
+
+		sleep(3000);
+		clickLinkWithText("Szerkesztés");
+		sleep(2000);
+		checkSelect("type", "GAP biztosítás");
+		checkSelect("company", company);
+
+		checkField("ident", ident);
+		checkField("price", "" + price);
+
+		submit();
+		sleep(2000);
+
+		// TÖRÖL
+
+		driver.findElement(By.cssSelector(".fas.fa-trash.circle")).click();
+		click("a[data-apply=\"confirmation\"]");
+
+		sleep(3000);
+		assertTrue("Event deleted", !driver.getPageSource().contains("GAP biztosítás"));
+		Log.log("Esemény: GAP biztosítás sikeresen törölve.");
 	}
 
 	public static void buildCompanyPage() throws IOException, InterruptedException {
@@ -5098,19 +5088,6 @@ public class TestBase {
 
 	}
 
-	public static void passShepherd() {
-		try {
-			driver.findElement(By.className("shepherd-button")).click();
-		} catch (NoSuchElementException e) {
-
-		}
-	}
-
-	public static void cronRun() throws IOException, InterruptedException {
-		goToPage(url + "/hu/admin/car/pages/run-cron/event");
-		clickLinkWithText("Események cron futtatása");
-	}
-
 	public static void driverLicenceNotifications(int days) throws Exception {
 		goToPage(url);
 		click("a.user-img");
@@ -5430,16 +5407,6 @@ public class TestBase {
 		driver.findElement(By.className("btn-secondary")).click();
 
 		Log.log("Esemény: Egész éves teljesítményadó sikeresen törölve.");
-
-	}
-
-	private static void clickCss(String string) throws IOException, InterruptedException {
-
-		sleep(2000);
-		WebElement element = driver.findElement(By.cssSelector(string));
-		Actions actions = new Actions(driver);
-		actions.moveToElement(element).click().perform();
-		sleep(3000);
 
 	}
 
@@ -6352,9 +6319,6 @@ public class TestBase {
 		sleep(2000);
 
 	}
-
-	public static String[] Tanu1 = { "Tanú 1", "234567CD", "Repülőtéri út 6/a" };
-	public static String[] Tanu2 = { "Tanú 2", "345678EF", "Igazából ez bármi lehet" };
 
 	public static void dgFillWitness() throws IOException, InterruptedException {
 
@@ -8108,7 +8072,6 @@ public class TestBase {
 
 	}
 	
-
 	public static void documentGeneratorErrorTest() throws IOException, InterruptedException {
 
 		clickLinkWithText("Dokumentum generáló");
@@ -9383,5 +9346,39 @@ public class TestBase {
 		Log.log("Register succeed");
 
 	}
+	
+	protected static void deleteUser() throws Exception, IOException, InterruptedException, TimeoutException {
+		sleep(5000);
+		passShepherd();
+
+		click(".user-img");
+		clickLinkWithText("Adatmódosítás");
+		clickLinkWithText("Fiók törlése");
+
+		try {
+
+			click(".btn-red");
+
+		} catch (TimeoutException e) {
+
+			driver.findElement(By.xpath("//div[@id='popup-content']//a[contains(text(), 'Garázs')]")).click();
+			sleep(3000);
+			deleteUserCars();
+			sleep(2000);
+			click(".user-img");
+			clickLinkWithText("Adatmódosítás");
+			clickLinkWithText("Fiók törlése");
+			click(".btn-red");
+
+		}
+
+		Log.log("Felhasználó törlése.");
+		wait.until(ExpectedConditions
+				.visibilityOfElementLocated(By.xpath("//p[contains(text(), 'Sikeres törlés email küldés!')]")));
+		Log.log("Törlés email elküldve");
+		deleteUserInEmail();
+
+	}
+
 
 }
